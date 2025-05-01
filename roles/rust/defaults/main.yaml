@@ -1,0 +1,29 @@
+---
+# Rust 工具链配置
+rust:
+  # 是否使用大陆镜像
+  mirror:
+    enable: true
+    url: "https://mirrors.ustc.edu.cn/rust-static"
+  crates:
+    enable: true
+    url: "https://mirrors.ustc.edu.cn/crates.io-index"
+  # 安装脚本配置
+  install:
+    urls:
+      - "https://sh.rustup.rs"
+      - "https://mirrors.ustc.edu.cn/misc/rustup-install.sh"
+  # Rust 工具配置
+  tools:
+    erdtree:
+      enable: true
+      name: erdtree
+    eza:
+      enable: true
+      name: eza
+    bat:
+      enable: true
+      name: bat
+    ripgrep:
+      enable: true
+      name: ripgrep 

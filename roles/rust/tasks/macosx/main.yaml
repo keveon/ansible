@@ -1,0 +1,6 @@
+---
+- name: 使用 Homebrew 安装 Rust
+  homebrew:
+    name: rust
+    state: present
+  register: rust_install

@@ -1,0 +1,4 @@
+---
+# Debian 特定软件包列表
+debian_packages:
+  - build-essential

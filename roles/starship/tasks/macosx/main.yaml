@@ -1,0 +1,17 @@
+---
+- name: 设置 Homebrew 路径
+  set_fact:
+    brew_path: >-
+      {% if ansible_architecture == 'arm64' %}
+      /opt/homebrew/bin/starship
+      {% else %}
+      /usr/local/bin/starship
+      {% endif %}
+
+- name: 使用 Homebrew 安装 Starship
+  homebrew:
+    name: starship
+    state: present
+    update_homebrew: yes
+  args:
+    creates: "{{ brew_path }}" 

@@ -1,0 +1,67 @@
+---
+name: Ansible
+description: Ansible 最佳实践规则
+rules:
+  - name: key 排序规则
+    description: Ansible 任务中的 key 排序规则
+    pattern: |
+      # 任务级别
+      - name: .*  # 任务名称
+      - block:    # 任务块
+      - include_tasks: .*  # 包含任务
+      - include_role: .*  # 包含角色
+      - when: .*  # 条件
+      - register: .*  # 注册变量
+      - tags: .*  # 标签
+      - become: .*  # 提权
+      - ignore_errors: .*  # 忽略错误
+
+      # 模块级别
+      - .*:  # 模块名
+        - .*: .*  # 模块参数（按字母顺序）
+        - .*: .*  # 模块参数（按字母顺序）
+        - .*: .*  # 模块参数（按字母顺序）
+
+      # 标签顺序
+      - tags:
+        - .*  # 按字母顺序
+        - .*  # 按字母顺序
+
+  - name: 模块参数命名规则
+    description: Ansible 模块参数的标准命名
+    pattern: |
+      # blockinfile 模块
+      - blockinfile:
+        - path: .*  # 而不是 dest
+        - block: .*
+        - create: .*
+        - marker: .*
+        - mode: .*
+
+      # file 模块
+      - file:
+        - src: .*
+        - dest: .*
+        - state: .*
+        - mode: .*
+
+      # get_url 模块
+      - get_url:
+        - url: .*
+        - dest: .*
+        - mode: .*
+
+  - name: 缩进规则
+    description: Ansible 任务的缩进规则
+    pattern: |
+      # 顶层任务
+      - name: .*  # 缩进 0
+
+      # 任务属性
+        block: .*  # 缩进 2
+        when: .*   # 缩进 2
+        tags: .*   # 缩进 2
+
+      # 模块
+          module_name:  # 缩进 6
+            param: value  # 缩进 8 

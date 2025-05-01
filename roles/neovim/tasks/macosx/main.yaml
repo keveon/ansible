@@ -1,0 +1,6 @@
+---
+- name: 安装 Neovim
+  homebrew:
+    name: neovim
+    state: present
+    update_homebrew: yes 

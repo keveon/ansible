@@ -1,0 +1,12 @@
+---
+- name: 安装通用软件包
+  homebrew:
+    name: "{{ common_packages }}"
+    state: present
+    update_homebrew: yes
+
+- name: 安装 macOS 特定软件包
+  homebrew:
+    name: "{{ macosx_packages }}"
+    state: present
+    update_homebrew: yes 

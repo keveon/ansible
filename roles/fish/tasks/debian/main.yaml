@@ -1,0 +1,13 @@
+---
+- name: 添加 OpenSUSE Fish Shell 仓库
+  apt_repository:
+    repo: deb http://download.opensuse.org/repositories/shells:/fish:/release:/4/Debian_{{ ansible_distribution_release }}/
+    state: present
+    filename: fish
+    key_url: https://download.opensuse.org/repositories/shells:fish:release:4/Debian_{{ ansible_distribution_release }}/Release.key
+
+- name: 安装 Fish Shell
+  apt:
+    name: fish
+    state: present
+    update_cache: yes

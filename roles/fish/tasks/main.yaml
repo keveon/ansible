@@ -1,0 +1,259 @@
+---
+- name: 安装 Fish Shell
+  block:
+    - name: 根据操作系统类型({{ ansible_distribution }})安装 Fish Shell
+      include_tasks: "{{ ansible_distribution | lower }}/main.yaml"
+      ignore_errors: true
+      register: os_specific_tasks
+
+    - name: 使用包管理器安装失败，手动下载安装 Fish Shell
+      block:
+        - name: 获取 Fish Shell 最新版本号
+          uri:
+            url: "https://api.github.com/repos/fish-shell/fish-shell/releases/latest"
+            return_content: yes
+          register: fish_latest_release
+
+        - name: 下载 Fish Shell 最新版静态编译包
+          get_url:
+            url: "{{ fish_latest_release.json.assets | selectattr('name', 'search', 'fish-static-' + ansible_architecture + '.*tar.xz') | map(attribute='browser_download_url') | first }}"
+            dest: "/tmp/fish.tar.xz"
+
+        - name: 解压 Fish Shell 安装包
+          unarchive:
+            src: "/tmp/fish.tar.xz"
+            dest: "/usr/local/bin/"
+            remote_src: yes
+            creates: "/usr/local/bin/fish"
+          become: true
+      when: os_specific_tasks is failed and ansible_distribution != 'MacOSX'
+  tags:
+    - fish
+    - shell
+
+- name: 验证 Fish Shell 安装
+  block:
+    - name: 获取 Fish Shell 安装路径
+      shell: which fish
+      register: fish_path
+      changed_when: false
+      failed_when: false
+
+    - name: 显示 Fish Shell 安装路径
+      debug:
+        msg: "Fish Shell 安装路径: {{ fish_path.stdout }}"
+
+    - name: 检查 Fish Shell 版本
+      command: "{{ fish_path.stdout }} --version"
+      register: fish_version
+      changed_when: false
+      failed_when: fish_version.rc != 0
+
+    - name: 显示 Fish Shell 版本信息
+      debug:
+        msg: "Fish Shell 版本信息: {{ fish_version.stdout }}"
+  when: os_specific_tasks is not failed
+  tags:
+    - fish
+    - shell
+  
+- name: 配置 Fish Shell 系统设置
+  block:
+    - name: 检查 Fish Shell 是否在 /etc/shells 中
+      shell: grep -q "{{ fish_path.stdout }}" /etc/shells
+      register: fish_in_shells
+      changed_when: false
+      failed_when: false
+      when: os_specific_tasks is not failed
+
+    - name: 添加 Fish Shell 到 /etc/shells
+      lineinfile:
+        path: /etc/shells
+        line: "{{ fish_path.stdout }}"
+        state: present
+        insertafter: EOF
+      when: os_specific_tasks is not failed and not fish_in_shells.rc == 0
+      become: true
+
+    - name: 配置 Fish Shell 为默认 shell
+      shell: chsh -s {{ fish_path.stdout }}
+      args:
+        executable: /bin/bash
+      when: os_specific_tasks is not failed and ansible_env.SHELL != fish_path.stdout
+      become: true
+  tags:
+    - fish
+    - shell
+
+- name: 创建 Fish Shell 配置目录
+  file:
+    path: "{{ ansible_env.HOME }}/.config/fish"
+    state: directory
+    mode: '0700'
+  tags:
+    - fish
+    - shell
+
+- name: 配置 Fish Shell 函数
+  block:
+    - name: 创建 Fish Shell 函数目录
+      file:
+        path: "{{ ansible_env.HOME }}/.config/fish/functions"
+        state: directory
+        mode: '0700'
+
+    - name: 遍历 functions 目录
+      find:
+        paths: "{{ role_path }}/files/functions"
+        patterns: "*.fish"
+        file_type: file
+        recurse: no
+      register: function_files
+      delegate_to: localhost
+      become: false
+
+    - name: 复制 functions 目录下的文件
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ ansible_env.HOME }}/.config/fish/functions/"
+        mode: '0600'
+      loop: "{{ function_files.files }}"
+
+  tags:
+    - fish
+    - shell
+
+- name: 配置 Fish Shell 补全
+  block:
+    - name: 创建 Fish Shell 补全目录
+      file:
+        path: "{{ ansible_env.HOME }}/.config/fish/completions"
+        state: directory
+        mode: '0700'
+
+    - name: 遍历 completions 目录
+      find:
+        paths: "{{ role_path }}/files/completions"
+        patterns: "*.fish"
+        file_type: file
+        recurse: no
+      register: completion_files
+      delegate_to: localhost
+      become: false
+
+    - name: 复制 completions 目录下的文件
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ ansible_env.HOME }}/.config/fish/completions/"
+        mode: '0600'
+      loop: "{{ completion_files.files }}"
+  tags:
+    - fish
+    - shell
+
+- name: 配置 Fish Shell 配置片段
+  block:
+    - name: 创建 Fish Shell 配置片段目录
+      file:
+        path: "{{ ansible_env.HOME }}/.config/fish/conf.d"
+        state: directory
+        mode: '0700'
+
+    - name: 配置 Homebrew/Linuxbrew 环境
+      blockinfile:
+        path: "{{ ansible_env.HOME }}/.config/fish/conf.d/00-homebrew.fish"
+        block: |
+          #------------------------------
+          # Homebrew & Linuxbrew
+          #------------------------------
+          if test -e /usr/local/bin/brew
+              eval "$(/usr/local/bin/brew shellenv)"
+          else if test -e /opt/homebrew/bin/brew
+              eval "$(/opt/homebrew/bin/brew shellenv)"
+          else if test -d /home/linuxbrew/.linuxbrew
+              eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          end
+        create: yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        mode: '0600'
+
+    - name: 配置 Fish Shell on MacOSX
+      include_tasks: macosx/config.yaml
+      when: ansible_distribution == 'MacOSX'
+
+    - name: 配置色彩高亮
+      block:
+        - name: 创建 Fish Shell 本地共享目录
+          file:
+            path: "{{ ansible_env.HOME }}/.local/share"
+            state: directory
+            mode: '0700'
+
+        - name: 检查 LS_COLORS 文件是否存在
+          stat:
+            path: "{{ ansible_env.HOME }}/.local/share/lscolors.csh"
+          register: lscolors_file
+
+        - name: 下载 LS_COLORS
+          get_url:
+            url: https://github.com/trapd00r/LS_COLORS/raw/master/lscolors.csh
+            dest: "{{ ansible_env.HOME }}/.local/share/lscolors.csh"
+            mode: '0600'
+            timeout: 30
+            validate_certs: false
+          when: not lscolors_file.stat.exists
+          register: lscolors_download
+          retries: 3
+          delay: 10
+          until: lscolors_download is success
+          ignore_errors: true
+
+        - name: 配置 LS_COLORS 环境变量
+          blockinfile:
+            path: "{{ ansible_env.HOME }}/.config/fish/conf.d/50-lscolors.fish"
+            block: |
+              #------------------------------
+              # LS_COLORS
+              #------------------------------
+              # https://github.com/trapd00r/LS_COLORS
+              # curl -fsSL https://github.com/trapd00r/LS_COLORS/raw/master/lscolors.csh -o ~/.local/share/lscolors.csh
+              if test -e ~/.local/share/lscolors.csh
+                  source ~/.local/share/lscolors.csh
+              end
+            create: yes
+            marker: "# {mark} ANSIBLE MANAGED BLOCK"
+            mode: '0600'
+
+    - name: 配置 Fish Shell 杂项设置
+      blockinfile:
+        path: "{{ ansible_env.HOME }}/.config/fish/conf.d/50-misc.fish"
+        block: |
+          #------------------------------
+          # Other stuff
+          #------------------------------
+          export PATH="$HOME/.local/bin:$PATH"
+
+          export MANPAGER="less -R --use-color -Dd+r -Du+b"
+        create: yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        mode: '0600'
+
+    - name: 遍历 conf.d 目录
+      find:
+        paths: "{{ role_path }}/files/conf.d"
+        patterns: "*.fish"
+        file_type: file
+        recurse: no
+      register: conf_files
+      delegate_to: localhost
+      become: false
+
+    - name: 复制 conf.d 目录下的文件
+      copy:
+        src: "{{ item.path }}"
+        dest: "{{ ansible_env.HOME }}/.config/fish/conf.d/"
+        mode: '0600'
+      loop: "{{ conf_files.files | default([]) }}"
+  tags:
+    - fish
+    - shell

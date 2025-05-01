@@ -1,0 +1,80 @@
+---
+- name: 安装 Docker
+  block:
+    - name: 在 Linux 上安装 Docker
+      shell: curl -fsSL https://get.docker.com/ | bash -s - --mirror Aliyun
+      args:
+        creates: /usr/bin/docker
+      register: docker_install
+      changed_when: docker_install.rc == 0
+      failed_when: docker_install.rc != 0
+      when: ansible_distribution != 'MacOSX'
+
+    - name: 在 macOS 上安装 Docker
+      include_tasks: macosx/main.yaml
+      when: ansible_distribution == 'MacOSX'
+  tags:
+    - docker
+    - container
+
+- name: 验证 Docker 安装
+  block:
+    - name: 获取 Docker 安装路径
+      shell: which docker
+      register: docker_path
+      changed_when: false
+      failed_when: false
+
+    - name: 显示 Docker 安装路径
+      debug:
+        msg: "Docker 安装路径: {{ docker_path.stdout }}"
+
+    - name: 检查 Docker 版本
+      command: "{{ docker_path.stdout }} --version"
+      register: docker_version
+      changed_when: false
+      failed_when: docker_version.rc != 0
+
+    - name: 显示 Docker 版本信息
+      debug:
+        msg: "Docker 版本信息: {{ docker_version.stdout }}"
+
+    - name: 运行 Docker 测试容器
+      command: "{{ docker_path.stdout }} run --rm hello-world"
+      register: docker_test
+      changed_when: false
+      failed_when: docker_test.rc != 0
+  tags:
+    - docker
+    - container
+
+- name: 配置 Docker
+  block:
+    - name: 配置 Docker
+      template:
+        src: daemon.json.j2
+        dest: /etc/docker/daemon.json
+        mode: "0644"
+      become: true
+
+    - name: 重新加载 systemd 守护进程
+      shell: systemctl daemon-reload
+      become: true
+
+    - name: 重新加载并重启 Docker 服务
+      systemd:
+        name: docker
+        state: restarted
+        enabled: yes
+      become: true
+  when: ansible_distribution != 'MacOSX'
+  tags:
+    - docker
+    - container
+
+- name: 配置 macOS Docker
+  include_tasks: macosx/config.yaml
+  when: ansible_distribution == 'MacOSX'
+  tags:
+    - docker
+    - container

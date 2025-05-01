@@ -1,0 +1,18 @@
+---
+- name: 显示系统发行版信息
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: 收集并输出系统信息
+      debug:
+        msg: |
+          发行版: {{ ansible_distribution }}
+          系统家族: {{ ansible_os_family }}
+          发行版版本: {{ ansible_distribution_version }}
+          发行版主版本: {{ ansible_distribution_major_version }}
+          内核版本: {{ ansible_kernel }}
+          处理器架构: {{ ansible_architecture }}
+          主机名: {{ ansible_hostname }}
+          IP 地址: {{ ansible_default_ipv4.address }}
+          内存总量: {{ ansible_memtotal_mb }} MB
+          CPU 核心数: {{ ansible_processor_cores }}

@@ -1,0 +1,6 @@
+---
+- name: 安装 Fish Shell
+  homebrew:
+    name: fish
+    state: present
+    update_homebrew: yes

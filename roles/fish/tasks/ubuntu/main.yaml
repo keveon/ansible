@@ -1,0 +1,12 @@
+---
+- name: 添加 Fish Shell PPA
+  apt_repository:
+    repo: ppa:fish-shell/release-4
+    state: present
+    update_cache: yes
+
+- name: 安装 Fish Shell
+  apt:
+    name: fish
+    state: present
+    update_cache: yes

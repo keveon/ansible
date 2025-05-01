@@ -1,0 +1,115 @@
+---
+- name: 设置 Node.js 安装目录权限
+  block:
+    - name: 设置目录权限
+      shell: |
+        # make cache folder (if missing) and take ownership
+        sudo mkdir -p /usr/local/n
+        sudo chown -R $(whoami) /usr/local/n
+        # make sure the required folders exist (safe to execute even if they already exist)
+        sudo mkdir -p /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
+        # take ownership of Node.js install destination folders
+        sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
+      become: true
+  tags:
+    - node
+    - nodejs
+    - javascript
+    - typescript
+
+- name: 安装 Node.js
+  block:
+    - name: 使用 n 安装 Node.js LTS 版本
+      block:
+        - name: 安装 Node.js LTS
+          shell: curl -fsSL https://raw.githubusercontent.com/tj/n/master/bin/n | bash -s lts
+          args:
+            creates: /usr/local/bin/node
+
+        - name: 安装 n
+          shell: npm install -g n
+      when: ansible_distribution != 'MacOSX'
+
+    - name: 在 macOS 上安装 Node.js
+      include_tasks: tasks/macosx/main.yaml
+      when: ansible_distribution == 'MacOSX'
+  tags:
+    - node
+    - nodejs
+    - javascript
+    - typescript
+
+- name: 验证 Node.js 安装
+  block:
+    - name: 获取 Node.js 安装路径
+      shell: which node
+      register: node_path
+      changed_when: false
+      failed_when: false
+
+    - name: 显示 Node.js 安装路径
+      debug:
+        msg: "Node.js 安装路径: {{ node_path.stdout }}"
+
+    - name: 检查 Node.js 版本
+      command: "{{ node_path.stdout }} --version"
+      register: node_version
+      changed_when: false
+      failed_when: node_version.rc != 0
+
+    - name: 显示 Node.js 版本信息
+      debug:
+        msg: "Node.js 版本信息: {{ node_version.stdout }}"
+  tags:
+    - node
+    - nodejs
+    - javascript
+    - typescript
+
+- name: 配置 Node.js 使用大陆镜像
+  block:
+    - name: 设置 npm 使用淘宝镜像
+      shell: npm config set registry {{ nodejs.npm.registry | default('https://registry.npmmirror.com') }}
+      when: nodejs.npm.registry != ""
+      register: npm_registry_set
+
+    - name: 显示当前 npm 镜像
+      shell: npm config get registry
+      register: current_npm_registry
+      changed_when: false
+
+    - name: 显示 npm 镜像信息
+      debug:
+        msg: "当前 npm 镜像: {{ current_npm_registry.stdout }}"
+  tags:
+    - node
+    - nodejs
+    - javascript
+    - typescript
+
+- name: 安装包管理器
+  block:
+    - name: 安装 npm
+      shell: npm install -g npm
+      register: npm_install
+      changed_when: npm_install.rc == 0
+      failed_when: npm_install.rc != 0
+
+    - name: 安装 yarn
+      shell: npm install -g yarn
+      when: nodejs.package_managers.yarn | default(true)
+      register: yarn_install
+      changed_when: yarn_install.rc == 0
+      failed_when: yarn_install.rc != 0
+
+    - name: 安装 pnpm
+      shell: npm install -g pnpm
+      when: nodejs.package_managers.pnpm | default(true)
+      register: pnpm_install
+      changed_when: pnpm_install.rc == 0
+      failed_when: pnpm_install.rc != 0
+  tags:
+    - node
+    - nodejs
+    - javascript
+    - typescript

@@ -1,0 +1,159 @@
+---
+- name: 安装 Neovim
+  block:
+    - name: 根据操作系统类型({{ ansible_distribution }})安装 Neovim
+      include_tasks: "{{ ansible_distribution | lower }}/main.yaml"
+      ignore_errors: true
+      register: os_specific_tasks
+
+    - name: 使用包管理器安装失败，手动下载安装 Neovim
+      block:
+        - name: 获取 Neovim 最新版本号
+          uri:
+            url: "https://api.github.com/repos/neovim/neovim/releases/latest"
+            return_content: yes
+          register: neovim_latest_release
+
+        - name: 下载 Neovim 最新版 AppImage
+          get_url:
+            url: "{{ neovim_latest_release.json.assets | selectattr('name', 'search', ansible_architecture ~ '.*appimage') | map(attribute='browser_download_url') | first }}"
+            dest: "/usr/local/bin/nvim.appimage"
+            mode: '0755'
+          become: true
+
+        - name: 创建符号链接到 /usr/local/bin/nvim
+          file:
+            src: "/usr/local/bin/nvim.appimage"
+            dest: "/usr/local/bin/nvim"
+            state: link
+          become: true
+      when: os_specific_tasks is failed and ansible_distribution != 'MacOSX'
+  tags:
+    - neovim
+    - editor
+    - vim
+    - nvim
+    - vi
+
+- name: 验证 Neovim 安装
+  block:
+    - name: 获取 Neovim 安装路径
+      shell: which nvim
+      register: nvim_path
+      changed_when: false
+      failed_when: false
+
+    - name: 显示 Neovim 安装路径
+      debug:
+        msg: "Neovim 安装路径: {{ nvim_path.stdout }}"
+
+    - name: 检查 Neovim 版本
+      command: "{{ nvim_path.stdout }} --version"
+      register: nvim_version
+      changed_when: false
+      failed_when: nvim_version.rc != 0
+
+    - name: 显示 Neovim 版本信息
+      debug:
+        msg: "Neovim 版本信息: {{ nvim_version.stdout }}"
+  tags:
+    - neovim
+    - editor
+    - vim
+    - nvim
+    - vi
+
+- name: 设置 Neovim 为默认编辑器
+  block:
+    - name: 设置 vi 的替代方案
+      alternatives:
+        name: vi
+        path: "{{ nvim_path.stdout }}"
+        priority: 60
+      become: true
+      when: ansible_distribution in ['Ubuntu', 'Debian'] and nvim_path.stdout != ""
+
+    - name: 设置 vim 的替代方案
+      alternatives:
+        name: vim
+        path: "{{ nvim_path.stdout }}"
+        priority: 60
+      become: true
+      when: ansible_distribution in ['Ubuntu', 'Debian'] and nvim_path.stdout != ""
+
+    - name: 设置 editor 的替代方案
+      alternatives:
+        name: editor
+        path: "{{ nvim_path.stdout }}"
+        priority: 60
+      become: true
+      when: ansible_distribution in ['Ubuntu', 'Debian'] and nvim_path.stdout != ""
+
+    - name: 设置编辑器环境变量
+      blockinfile:
+        path: "{{ ansible_env.HOME }}/.config/fish/conf.d/20-editor.fish"
+        block: |
+          #------------------------------
+          # Editor
+          #------------------------------
+          set -gx EDITOR "{{ nvim_path.stdout }}"
+          set -gx VISUAL "{{ nvim_path.stdout }}"
+        create: yes
+        marker: "# {mark} ANSIBLE MANAGED BLOCK"
+        mode: '0600'
+      when: nvim_path.stdout != ""
+  when: nvim_path.rc == 0
+  tags:
+    - neovim
+    - editor
+    - vim
+    - nvim
+    - vi
+
+- name: 安装 LazyVim
+  block:
+    - name: 创建 Neovim 配置目录
+      file:
+        path: "{{ ansible_env.HOME }}/.config/nvim"
+        state: directory
+        mode: '0700'
+
+    - name: 检查 LazyVim 配置是否存在
+      stat:
+        path: "{{ ansible_env.HOME }}/.config/nvim/init.lua"
+      register: lazyvim_config
+
+    - name: 克隆并初始化 LazyVim
+      block:
+        - name: 克隆 LazyVim 配置
+          git:
+            repo: "{{ neovim.lazyvim.repo | default('https://github.com/LazyVim/starter') }}"
+            dest: "{{ ansible_env.HOME }}/.config/nvim"
+            version: "{{ neovim.lazyvim.branch | default('main') }}"
+            force: yes
+          register: lazy_clone
+
+        - name: 删除 LazyVim 的 .git 目录
+          file:
+            path: "{{ ansible_env.HOME }}/.config/nvim/.git"
+            state: absent
+
+        - name: 安装 LazyVim 依赖
+          block:
+            - name: 安装 Neovim 相关 NPM 包
+              shell: npm install -g neovim markdown-toc stylelint prettier @fsouza/prettierd
+              register: npm_install
+              changed_when: npm_install.rc == 0
+              failed_when: npm_install.rc != 0
+
+        - name: 初始化 LazyVim
+          command: "{{ nvim_path.stdout }} --headless -c 'quitall'"
+          changed_when: false
+      when: not lazyvim_config.stat.exists
+  when: nvim_path.rc == 0
+  tags:
+    - neovim
+    - editor
+    - vim
+    - nvim
+    - vi

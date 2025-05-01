@@ -1,0 +1,31 @@
+---
+galaxy_info:
+  role_name: rust
+  author: keveon
+  description: 安装和配置 Rust 开发环境
+  company: keveon
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: CentOS
+      versions:
+        - all
+    - name: ArchLinux
+      versions:
+        - all
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - rust
+    - cargo
+    - programming
+    - development
+
+dependencies: [] 

@@ -1,0 +1,23 @@
+---
+- name: 根据操作系统类型({{ ansible_distribution }})进行系统准备
+  include_tasks: "{{ ansible_distribution | lower }}/main.yaml"
+  ignore_errors: true
+  register: os_specific_tasks
+
+- name: 修改系统时区
+  timezone:
+    name: "{{ system.timezone | default('Asia/Shanghai') }}"
+  when: ansible_distribution != 'MacOSX'
+
+- name: 修改系统语言环境
+  locale_gen:
+    name: "{{ system.locale | default('zh_CN.UTF-8') }}"
+    state: present
+  when: ansible_distribution != 'MacOSX'
+
+- name: 设置系统默认语言环境
+  lineinfile:
+    path: /etc/locale.conf
+    line: LANG={{ system.locale | default('zh_CN.UTF-8') }}
+    state: present
+  when: ansible_distribution != 'MacOSX'

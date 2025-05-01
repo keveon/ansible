@@ -1,0 +1,84 @@
+---
+
+- name: 安装 xcode-select
+  shell: xcode-select --install
+  when: xcode_select_check.rc != 0
+  async: 1800
+  poll: 0
+
+- name: 等待 xcode-select 安装完成
+  shell: xcode-select -p
+  register: xcode_select_wait
+  until: xcode_select_wait.rc == 0
+  retries: 180
+  delay: 10
+  when: xcode_select_check.rc != 0
+  changed_when: false
+
+- name: 设置 Homebrew 路径
+  set_fact:
+    brew_path: >-
+      {% if ansible_architecture == 'arm64' %}
+      /opt/homebrew/bin/brew
+      {% else %}
+      /usr/local/bin/brew
+      {% endif %}
+
+- name: 检查 Homebrew 是否安装
+  stat:
+    path: "{{ homebrew_path }}"
+  register: homebrew_installed
+
+- name: 确保 xcode-select 已安装
+  shell: xcode-select -p
+  register: xcode_select_check
+  ignore_errors: true
+  changed_when: false
+
+- name: 安装 Homebrew
+  shell: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  when: not homebrew_installed.stat.exists
+  async: 3600
+  poll: 0
+
+- name: 等待 Homebrew 安装完成
+  shell: "{{ brew_path }} --version"
+  register: brew_wait
+  until: brew_wait.rc == 0
+  retries: 180
+  delay: 10
+  when: not homebrew_installed.stat.exists
+  changed_when: false
+
+- name: 检查 Homebrew Cask 是否已初始化
+  shell: brew tap list | grep -q "homebrew/cask"
+  args:
+    executable: "{{ brew_path }}"
+  register: cask_check
+  changed_when: false
+  failed_when: false
+
+- name: 初始化 Homebrew Cask
+  shell: brew tap homebrew/cask
+  args:
+    executable: "{{ brew_path }}"
+  when: cask_check.rc != 0
+
+- name: 检查 Homebrew Fonts 是否已初始化
+  shell: brew tap list | grep -q "homebrew/cask-fonts"
+  args:
+    executable: "{{ brew_path }}"
+  register: fonts_check
+  changed_when: false
+  failed_when: false
+
+- name: 更新 Homebrew Fonts
+  shell: brew tap homebrew/cask-fonts
+  args:
+    executable: "{{ brew_path }}"
+  when: fonts_check.rc != 0
+
+- name: 更新软件包
+  shell: brew upgrade --greedy
+  args:
+    executable: "{{ brew_path }}"

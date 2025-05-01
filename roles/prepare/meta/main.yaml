@@ -1,0 +1,30 @@
+---
+galaxy_info:
+  role_name: prepare
+  author: keveon
+  description: 系统准备角色，用于配置系统基本设置
+  company: 
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: CentOS
+      versions:
+        - all
+    - name: ArchLinux
+      versions:
+        - all
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - system
+    - prepare
+    - configuration
+
+dependencies: [] 

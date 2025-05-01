@@ -1,0 +1,118 @@
+---
+- name: 设置 Rust 安装镜像
+  shell: |
+    export RUSTUP_DIST_SERVER="{{ rust.mirror.url | default('https://mirrors.ustc.edu.cn/rust-static') }}"
+    export RUSTUP_UPDATE_ROOT="{{ rust.mirror.url | default('https://mirrors.ustc.edu.cn/rust-static') }}/rustup"
+  when: rust.mirror.enable | default(true)
+  changed_when: false
+  tags:
+    - rust
+    - cargo
+    - programming
+
+- name: 安装 Rust
+  block:
+    - name: 在 Linux 上安装 Rust
+      shell: curl --proto '=https' --tlsv1.2 -sSf {{ item }} | sh -s -- -y
+      args:
+        creates: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
+      loop: "{{ rust.install.urls | default(['https://sh.rustup.rs']) }}"
+      register: rust_install
+      until: rust_install is success
+      retries: "{{ rust.install.urls | default(['https://sh.rustup.rs']) | length }}"
+      delay: 0
+      when: ansible_distribution != 'MacOSX'
+
+    - name: 在 macOS 上安装 Rust
+      include_tasks: macosx/main.yaml
+      when: ansible_distribution == 'MacOSX'
+  tags:
+    - rust
+    - cargo
+    - programming
+
+- name: 验证 Rust 安装
+  block:
+    - name: 获取 Rust 安装路径
+      shell: which rustc
+      register: rustc_path
+      changed_when: false
+      failed_when: false
+
+    - name: 显示 Rust 安装路径
+      debug:
+        msg: "Rust 安装路径: {{ rustc_path.stdout }}"
+
+    - name: 检查 Rust 版本
+      command: "{{ rustc_path.stdout }} --version"
+      register: rust_version
+      changed_when: false
+      failed_when: rust_version.rc != 0
+
+    - name: 显示 Rust 版本信息
+      debug:
+        msg: "Rust 版本信息: {{ rust_version.stdout }}"
+  tags:
+    - rust
+    - cargo
+    - programming
+
+- name: 设置 Crates 镜像
+  block:
+    - name: 创建 .cargo 目录
+      file:
+        path: "{{ ansible_env.HOME }}/.cargo"
+        state: directory
+        mode: '0755'
+
+    - name: 配置 Crates 镜像
+      template:
+        src: config.toml.j2
+        dest: "{{ ansible_env.HOME }}/.cargo/config.toml"
+        mode: '0644'
+  when: rust.crates.enable | default(true)
+  tags:
+    - rust
+    - cargo
+    - programming
+
+- name: 安装 Rust 工具
+  block:
+    - name: 在 Linux 上安装 Rust 工具
+      shell: cargo install {{ item.key }}
+      args:
+        creates: "{{ ansible_env.HOME }}/.cargo/bin/{{ item.key }}"
+      loop: "{{ rust.tools | default({}) | dict2items }}"
+      when: item.value.enable | default(true) and ansible_distribution != 'MacOSX'
+
+    - name: 在 macOS 上安装 Rust 工具
+      homebrew:
+        name: "{{ rust.tools | default({}) | dict2items | selectattr('value.enable', 'true') | map(attribute='key') | list }}"
+        state: present
+      when: ansible_distribution == 'MacOSX'
+  tags:
+    - rust
+    - cargo
+    - programming
+
+- name: 配置 Rust 工具
+  block:
+    - name: 创建配置目录
+      file:
+        path: "{{ ansible_env.HOME }}/.config/{{ item.key }}"
+        state: directory
+        mode: '0700'
+      loop: "{{ rust.tools | default({}) | dict2items }}"
+      when: item.value.enable | default(true)
+
+    - name: 复制配置文件
+      copy:
+        src: "{{ role_path }}/files/{{ item.key }}/"
+        dest: "{{ ansible_env.HOME }}/.config/{{ item.key }}/"
+        mode: '0600'
+      loop: "{{ rust.tools | default({}) | dict2items }}"
+      when: item.value.enable | default(true)
+  tags:
+    - rust
+    - cargo
+    - programming

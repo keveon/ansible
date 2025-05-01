@@ -1,0 +1,4 @@
+---
+# Ubuntu 特定软件包列表
+ubuntu_packages:
+  - build-essential

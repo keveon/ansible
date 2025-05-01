@@ -1,0 +1,9 @@
+---
+- name: 配置 OrbStack Docker
+  template:
+    src: daemon.json.j2
+    dest: "{{ ansible_env.HOME }}/.orbstack/config/docker.json"
+    mode: "0644"
+
+- name: 重启 OrbStack
+  shell: orbstack restart docker

@@ -1,0 +1,14 @@
+---
+all:
+  children:
+    example:
+      hosts:
+        example-1:
+          ansible_host: example.com
+      vars:
+        ansible_user: ansible
+        ansible_ssh_private_key_file: ~/.ssh/id_rsa
+    local:
+      hosts:
+        localhost:
+          ansible_connection: local

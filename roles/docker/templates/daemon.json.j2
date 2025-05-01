@@ -1,0 +1,25 @@
+{
+  "ipv6": {{ docker.ipv6 | default(false) | lower }},
+  "live-restore": {{ docker.live_restore | default(true) | lower }},
+  "data-root": "{{ docker.data_root | default('/var/lib/docker') }}",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "10"
+  },
+  "registry-mirrors": [
+{% for url in docker.registry_mirrors | default([]) %}
+    "{{ url }}"{% if not loop.last %},
+{% else %}
+
+{% endif %}
+{% endfor %}
+  ],
+  "insecure-registries": [
+{% for url in docker.insecure_registries | default([]) %}
+    "{{ url }}"{% if not loop.last %},
+{% else %}
+
+{% endif %}
+{% endfor %}
+  ]
+}

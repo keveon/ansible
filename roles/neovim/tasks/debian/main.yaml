@@ -1,0 +1,6 @@
+---
+- name: 安装 Neovim
+  apt:
+    name: neovim
+    state: present
+    update_cache: yes 

@@ -1,0 +1,80 @@
+---
+- name: 安装 Starship
+  block:
+    - name: 使用官方脚本安装 Starship
+      shell: curl -sS https://starship.rs/install.sh | sh -s -- -y
+      args:
+        creates: "/usr/local/bin/starship"
+      register: official_install
+      when: ansible_distribution != 'MacOSX'
+
+    - name: 使用官方脚本安装失败，从 Github 下载安装最新版本
+      block:
+        - name: 获取 Starship 最新版本号
+          uri:
+            url: "https://api.github.com/repos/starship/starship/releases/latest"
+            return_content: yes
+          register: starship_latest_release
+
+        - name: 下载 Starship 安装包
+          get_url:
+            url: "{{ starship_latest_release.json.assets | selectattr('name', 'search', ansible_architecture ~ '.*unknown-linux-musl.tar.gz') | map(attribute='browser_download_url') | first }}"
+            dest: "/tmp/starship.tar.gz"
+
+        - name: 解压 Starship 安装包
+          unarchive:
+            src: "/tmp/starship.tar.gz"
+            dest: "/usr/local/bin/"
+            remote_src: yes
+            creates: "/usr/local/bin/starship"
+      when: official_install is failed and ansible_distribution != 'MacOSX'
+
+    - name: 使用 Homebrew 安装 Starship
+      include_tasks: macosx/main.yaml
+      when: ansible_distribution == 'MacOSX'
+  tags:
+    - starship
+    - shell
+
+- name: 验证 Starship 安装
+  block:
+    - name: 获取 Starship 安装路径
+      shell: which starship
+      register: starship_path
+      changed_when: false
+      failed_when: false
+
+    - name: 显示 Starship 安装路径
+      debug:
+        msg: "Starship 安装路径: {{ starship_path.stdout }}"
+
+    - name: 检查 Starship 版本
+      command: "{{ starship_path.stdout }} --version"
+      register: starship_version
+      changed_when: false
+      failed_when: starship_version.rc != 0
+
+    - name: 显示 Starship 版本信息
+      debug:
+        msg: "Starship 版本信息: {{ starship_version.stdout }}"
+  tags:
+    - starship
+    - shell
+
+- name: 配置 Starship
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.config/fish/conf.d/10-starship.fish"
+    block: |
+      #------------------------------
+      # Starship
+      #------------------------------
+      if command -q starship
+          starship init fish | source
+      end
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+    mode: '0600'
+  tags:
+    - starship
+    - shell
+ 

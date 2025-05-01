@@ -1,0 +1,37 @@
+---
+galaxy_info:
+  role_name: neovim
+  author: keveon
+  description: Neovim 编辑器安装和配置
+  company: 
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: CentOS
+      versions:
+        - all
+    - name: ArchLinux
+      versions:
+        - all
+    - name: MacOSX
+      versions:
+        - all
+  galaxy_tags:
+    - neovim
+    - editor
+    - vim
+    - development
+
+dependencies: 
+  - role: nodejs
+    tags:
+      - neovim
+      - nodejs
+      - javascript
+      - typescript

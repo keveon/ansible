@@ -1,0 +1,18 @@
+---
+- name: 安装 Coreutils
+  homebrew:
+    name: coreutils
+    state: present
+    update_homebrew: yes
+
+- name: 配置 coreutils 环境
+  copy:
+    content: |
+      #------------------------------
+      # GNU Tools
+      #------------------------------
+      if test -d "$(brew --prefix coreutils)" >/dev/null 2>&1
+          export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+      end
+    dest: "{{ ansible_env.HOME }}/.config/fish/conf.d/01-coreutils.fish"
+    mode: '0600'

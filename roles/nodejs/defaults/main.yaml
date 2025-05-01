@@ -1,0 +1,10 @@
+---
+nodejs:
+  # npm 配置
+  npm:
+    registry: "https://registry.npmmirror.com"
+
+  # 包管理器配置
+  package_managers:
+    yarn: true
+    pnpm: true 

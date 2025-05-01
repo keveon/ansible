@@ -1,0 +1,6 @@
+---
+- name: 安装 Fish Shell
+  yay:
+    name: fish
+    state: present
+    update_cache: yes

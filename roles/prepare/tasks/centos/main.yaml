@@ -1,0 +1,10 @@
+---
+- name: 更新 dnf 缓存
+  dnf:
+    update_cache: yes
+ 
+- name: 升级系统软件包
+  dnf:
+    name: "*"
+    state: latest
+    exclude: kernel* 

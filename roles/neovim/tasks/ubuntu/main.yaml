@@ -1,0 +1,12 @@
+---
+- name: 添加 Neovim PPA
+  apt_repository:
+    repo: ppa:neovim-ppa/unstable
+    state: present
+    update_cache: yes
+
+- name: 安装 Neovim
+  apt:
+    name: neovim
+    state: present
+    update_cache: yes 

@@ -1,0 +1,10 @@
+---
+- name: 根据操作系统类型({{ ansible_distribution }})加载对应的软件包列表,如git/gcc等基础开发工具
+  include_vars: "{{ ansible_distribution | lower }}.yaml"
+  ignore_errors: true
+  register: os_specific_vars
+
+- name: 安装系统软件包
+  include_tasks: "{{ ansible_distribution | lower }}/main.yaml"
+  ignore_errors: true
+  register: os_specific_tasks

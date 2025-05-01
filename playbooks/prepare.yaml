@@ -1,0 +1,13 @@
+---
+- name: 准备系统环境
+  hosts: all
+  become: true
+  roles:
+    - role: prepare
+    - role: packages
+    - role: fish
+    - role: rust
+    - role: starship
+    - role: nodejs
+    - role: neovim
+    - role: docker

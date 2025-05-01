@@ -1,0 +1,15 @@
+---
+- name: 安装 Node.js 依赖
+  block:
+    - name: 安装 n
+      homebrew:
+        name: n
+        state: present
+
+    - name: 使用 n 安装 Node.js LTS 版本
+      shell: n lts
+      args:
+        creates: /usr/local/bin/node
+  tags:
+    - nodejs
+    - javascript 

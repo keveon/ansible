@@ -1,0 +1,67 @@
+---
+- name: 更新 pacman 数据库
+  pacman:
+    update_cache: yes
+
+- name: 升级系统软件包
+  pacman:
+    upgrade: yes
+    extra_args: --needed 
+
+- name: 检查 yay 是否已安装
+  command: which yay
+  register: yay_check
+  ignore_errors: true
+  changed_when: false
+
+- name: 安装 yay 依赖包
+  pacman:
+    name:
+      - base-devel
+      - git
+      - go
+    state: present
+  when: yay_check.rc != 0
+
+- name: 克隆 yay 仓库
+  git:
+    repo: https://aur.archlinux.org/yay.git
+    dest: /tmp/yay
+  when: yay_check.rc != 0
+
+- name: 编译并安装 yay
+  shell: |
+    cd /tmp/yay
+    makepkg -si --noconfirm
+  become: yes
+  become_user: "{{ ansible_user_id }}"
+  when: yay_check.rc != 0
+
+- name: 创建 yay 配置目录
+  file:
+    path: /etc/yay.conf.d
+    state: directory
+    mode: '0755'
+  when: yay_check.rc == 0
+
+- name: 配置 yay 彩色输出
+  blockinfile:
+    path: /etc/yay.conf.d/color.conf
+    create: yes
+    mode: '0644'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - YAY COLOR CONFIG"
+    block: |
+      Color
+  when: yay_check.rc == 0
+
+- name: 清理 yay 安装文件
+  file:
+    path: /tmp/yay
+    state: absent
+  when: yay_check.rc != 0
+
+- name: 更新 yay 缓存
+  shell: yay -Syy
+  become: yes
+  become_user: "{{ ansible_user_id }}"
+  when: yay_check.rc == 0

@@ -1,0 +1,7 @@
+---
+system:
+  # 系统时区配置
+  timezone: Asia/Shanghai
+ 
+  # 系统语言环境配置
+  locale: zh_CN.UTF-8 

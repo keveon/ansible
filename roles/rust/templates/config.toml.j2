@@ -1,0 +1,8 @@
+[source.crates-io]
+replace-with = "ustc"
+
+[source.ustc]
+registry = "sparse+{{ rust.crates.url | regex_replace('([^/])$', '\\1/') }}"
+
+[registries.ustc]
+index = "sparse+{{ rust.crates.url | regex_replace('([^/])$', '\\1/') }}"

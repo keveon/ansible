@@ -1,0 +1,14 @@
+---
+- name: 检查 Fish Shell 发布包
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: 获取 Fish Shell 最新版本号
+      uri:
+        url: "https://api.github.com/repos/fish-shell/fish-shell/releases/latest"
+        return_content: yes
+      register: fish_latest_release
+
+    - name: 显示可用的发布包
+      debug:
+        msg: "可用的发布包: {{ fish_latest_release.json.assets | map(attribute='name') | list }}" 

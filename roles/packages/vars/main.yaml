@@ -1,0 +1,9 @@
+---
+# 通用软件包列表
+common_packages:
+  - git
+  - curl
+  - wget
+  - htop
+  - tmux
+  - rsync

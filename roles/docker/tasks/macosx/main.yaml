@@ -1,0 +1,12 @@
+---
+- name: 安装 OrbStack
+  homebrew_cask:
+    name: orbstack
+    state: present
+  register: orbstack_install
+
+- name: 等待 OrbStack 安装完成
+  wait_for:
+    path: /Applications/OrbStack.app
+    state: present
+  when: orbstack_install.changed

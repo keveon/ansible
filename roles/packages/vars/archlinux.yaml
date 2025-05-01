@@ -1,0 +1,4 @@
+---
+# Arch Linux 特定软件包列表
+archlinux_packages:
+  - base-devel
