@@ -6,5 +6,5 @@ nodejs:
 
   # 包管理器配置
   package_managers:
-    yarn: true
-    pnpm: true 
+    yarn: false
+    pnpm: false

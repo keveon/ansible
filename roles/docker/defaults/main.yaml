@@ -4,5 +4,5 @@ docker:
   ipv6: false
   live_restore: true
   data_root: "/var/lib/docker"
-  registry_mirrors: []
-  insecure_registries: []
+  registry_mirrors: [ ]
+  insecure_registries: [ ]

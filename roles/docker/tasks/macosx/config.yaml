@@ -4,6 +4,12 @@
     src: daemon.json.j2
     dest: "{{ ansible_env.HOME }}/.orbstack/config/docker.json"
     mode: "0644"
+  tags:
+    - docker
+    - container
 
 - name: 重启 OrbStack
   shell: orbstack restart docker
+  tags:
+    - docker
+    - container

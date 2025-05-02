@@ -4,3 +4,6 @@
     name: fish
     state: present
     update_cache: yes
+  tags:
+    - fish
+    - shell

@@ -3,17 +3,48 @@
   include_tasks: "{{ ansible_distribution | lower }}/main.yaml"
   ignore_errors: true
   register: os_specific_tasks
+  tags:
+    - prepare
+
+- name: DNS 配置检查和修改
+  block:
+    - name: 检查 github.com 的 DNS 解析
+      shell: ping -c 1 github.com
+      register: dns_check
+      ignore_errors: true
+      changed_when: false
+
+    - name: 备份 DNS 配置文件
+      copy:
+        src: /etc/resolv.conf
+        dest: /etc/resolv.conf.bak
+      when: dns_check.rc != 0
+      become: true
+
+    - name: 修改 DNS 为 1.1.1.1
+      copy:
+        content: |
+          nameserver 1.1.1.1
+        dest: /etc/resolv.conf
+      when: dns_check.rc != 0
+      become: true
+  tags:
+    - prepare
 
 - name: 修改系统时区
   timezone:
     name: "{{ system.timezone | default('Asia/Shanghai') }}"
   when: ansible_distribution != 'MacOSX'
+  tags:
+    - prepare
 
 - name: 修改系统语言环境
   locale_gen:
     name: "{{ system.locale | default('zh_CN.UTF-8') }}"
     state: present
   when: ansible_distribution != 'MacOSX'
+  tags:
+    - prepare
 
 - name: 设置系统默认语言环境
   lineinfile:
@@ -21,3 +52,5 @@
     line: LANG={{ system.locale | default('zh_CN.UTF-8') }}
     state: present
   when: ansible_distribution != 'MacOSX'
+  tags:
+    - prepare

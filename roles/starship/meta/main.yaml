@@ -3,7 +3,7 @@ galaxy_info:
   role_name: starship
   author: keveon
   description: Starship 提示符安装和配置
-  company: 
+  company:
   license: MIT
   min_ansible_version: 2.9
   platforms:
@@ -28,4 +28,4 @@ galaxy_info:
     - prompt
     - terminal
 
-dependencies: [] 
+dependencies: [ ]

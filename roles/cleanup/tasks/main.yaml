@@ -1,0 +1,7 @@
+---
+- name: 恢复 DNS 配置
+  copy:
+    src: /etc/resolv.conf.bak
+    dest: /etc/resolv.conf
+  when: dns_check is defined and dns_check.rc != 0
+  become: true 

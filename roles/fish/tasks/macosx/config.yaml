@@ -4,15 +4,23 @@
     name: coreutils
     state: present
     update_homebrew: yes
+  tags:
+    - fish
+    - shell
 
 - name: 配置 coreutils 环境
-  copy:
-    content: |
+  blockinfile:
+    path: "{{ ansible_env.HOME }}/.config/fish/conf.d/01-coreutils.fish"
+    block: |
       #------------------------------
       # GNU Tools
       #------------------------------
       if test -d "$(brew --prefix coreutils)" >/dev/null 2>&1
-          export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+        export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
       end
-    dest: "{{ ansible_env.HOME }}/.config/fish/conf.d/01-coreutils.fish"
+    create: yes
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
     mode: '0600'
+  tags:
+    - fish
+    - shell

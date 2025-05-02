@@ -11,3 +11,4 @@
     - role: nodejs
     - role: neovim
     - role: docker
+    - role: cleanup

@@ -10,14 +10,14 @@
 
 ## 变量
 
-| 变量名 | 默认值 | 描述 |
-|--------|--------|------|
-| `common_packages` | `[]` | 通用软件包列表 |
-| `ubuntu_packages` | `['build-essential']` | Ubuntu 特定软件包列表 |
-| `debian_packages` | `['build-essential']` | Debian 特定软件包列表 |
-| `centos_packages` | `[]` | CentOS 特定软件包列表 |
-| `archlinux_packages` | `['base-devel']` | Arch Linux 特定软件包列表 |
-| `macosx_packages` | `[]` | macOS 特定软件包列表 |
+| 变量名                  | 默认值                   | 描述                 |
+|----------------------|-----------------------|--------------------|
+| `common_packages`    | `[]`                  | 通用软件包列表            |
+| `ubuntu_packages`    | `['build-essential']` | Ubuntu 特定软件包列表     |
+| `debian_packages`    | `['build-essential']` | Debian 特定软件包列表     |
+| `centos_packages`    | `[]`                  | CentOS 特定软件包列表     |
+| `archlinux_packages` | `['base-devel']`      | Arch Linux 特定软件包列表 |
+| `macosx_packages`    | `[]`                  | macOS 特定软件包列表      |
 
 ## 示例
 

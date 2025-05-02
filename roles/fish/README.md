@@ -26,7 +26,7 @@
   roles:
     - role: fish
       vars:
-        fish: []
+        fish: [ ]
 ```
 
 ## 依赖

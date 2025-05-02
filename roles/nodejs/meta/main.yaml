@@ -3,7 +3,7 @@ galaxy_info:
   role_name: nodejs
   author: keveon
   description: Node.js 运行时安装和配置
-  company: 
+  company:
   license: MIT
   min_ansible_version: 2.9
   platforms:
@@ -30,4 +30,4 @@ galaxy_info:
     - programming
     - development
 
-dependencies: [] 
+dependencies: [ ]

@@ -4,3 +4,7 @@
     name: rust
     state: present
   register: rust_install
+  tags:
+    - rust
+    - cargo
+    - programming

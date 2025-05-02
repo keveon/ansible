@@ -10,10 +10,10 @@
 
 ## 变量
 
-| 变量名 | 默认值 | 描述 |
-|--------|--------|------|
-| `system.timezone` | `Asia/Shanghai` | 系统时区 |
-| `system.locale` | `zh_CN.UTF-8` | 系统语言环境 |
+| 变量名               | 默认值             | 描述     |
+|-------------------|-----------------|--------|
+| `system.timezone` | `Asia/Shanghai` | 系统时区   |
+| `system.locale`   | `zh_CN.UTF-8`   | 系统语言环境 |
 
 ## 示例
 

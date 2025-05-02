@@ -12,7 +12,6 @@
         sudo chown -R $(whoami) /usr/local/bin /usr/local/lib /usr/local/include /usr/local/share
       become: true
   tags:
-    - node
     - nodejs
     - javascript
     - typescript
@@ -34,7 +33,6 @@
       include_tasks: tasks/macosx/main.yaml
       when: ansible_distribution == 'MacOSX'
   tags:
-    - node
     - nodejs
     - javascript
     - typescript
@@ -61,7 +59,6 @@
       debug:
         msg: "Node.js 版本信息: {{ node_version.stdout }}"
   tags:
-    - node
     - nodejs
     - javascript
     - typescript
@@ -82,7 +79,6 @@
       debug:
         msg: "当前 npm 镜像: {{ current_npm_registry.stdout }}"
   tags:
-    - node
     - nodejs
     - javascript
     - typescript
@@ -109,7 +105,6 @@
       changed_when: pnpm_install.rc == 0
       failed_when: pnpm_install.rc != 0
   tags:
-    - node
     - nodejs
     - javascript
     - typescript

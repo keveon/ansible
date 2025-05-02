@@ -7,8 +7,14 @@
     gpgcheck: yes
     gpgkey: https://download.opensuse.org/repositories/shells:fish:release:3/CentOS_{{ ansible_distribution_major_version }}/repodata/repomd.xml.key
     enabled: yes
+  tags:
+    - fish
+    - shell
 
 - name: 安装 Fish Shell
   yum:
     name: fish
     state: present
+  tags:
+    - fish
+    - shell

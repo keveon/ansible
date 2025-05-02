@@ -12,4 +12,5 @@
         creates: /usr/local/bin/node
   tags:
     - nodejs
-    - javascript 
+    - javascript
+    - typescript

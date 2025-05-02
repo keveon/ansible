@@ -3,7 +3,7 @@ galaxy_info:
   role_name: neovim
   author: keveon
   description: Neovim 编辑器安装和配置
-  company: 
+  company:
   license: MIT
   min_ansible_version: 2.9
   platforms:
@@ -28,7 +28,7 @@ galaxy_info:
     - vim
     - development
 
-dependencies: 
+dependencies:
   - role: nodejs
     tags:
       - neovim

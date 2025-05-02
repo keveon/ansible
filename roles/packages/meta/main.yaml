@@ -3,7 +3,7 @@ galaxy_info:
   role_name: packages
   author: keveon
   description: 系统软件包安装和配置
-  company: 
+  company:
   license: MIT
   min_ansible_version: 2.9
   platforms:
@@ -27,4 +27,4 @@ galaxy_info:
     - system
     - software
 
-dependencies: [] 
+dependencies: [ ]

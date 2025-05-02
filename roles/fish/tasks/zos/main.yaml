@@ -2,4 +2,7 @@
 # ZOS 系统暂时没有特定的准备任务
 - name: 显示 ZOS 系统信息
   debug:
-    msg: "当前系统是 ZOS {{ ansible_distribution_version }}" 
+    msg: "当前系统是 ZOS {{ ansible_distribution_version }}"
+  tags:
+    - fish
+    - shell

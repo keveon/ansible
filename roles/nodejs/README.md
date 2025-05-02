@@ -10,11 +10,11 @@
 
 ## 变量
 
-| 变量名 | 默认值 | 描述 |
-|--------|--------|------|
-| `nodejs.npm.registry` | `https://registry.npmmirror.com` | npm 镜像地址 |
-| `nodejs.package_managers.yarn` | `true` | 启用包管理器 Yarn |
-| `nodejs.package_managers.pnpm` | `true` | 启用包管理器 Pnpm |
+| 变量名                            | 默认值                              | 描述                  |
+|--------------------------------|----------------------------------|---------------------|
+| `nodejs.npm.registry`          | `https://registry.npmmirror.com` | npm 镜像地址，空字符串则为禁用镜像 |
+| `nodejs.package_managers.yarn` | `false`                          | 启用包管理器 Yarn         |
+| `nodejs.package_managers.pnpm` | `false`                          | 启用包管理器 Pnpm         |
 
 ## 示例
 

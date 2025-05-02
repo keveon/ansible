@@ -25,7 +25,7 @@
   roles:
     - role: starship
       vars:
-        starship: []
+        starship: [ ]
 
 ```
 

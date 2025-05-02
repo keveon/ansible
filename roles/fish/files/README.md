@@ -5,19 +5,19 @@
 ## 目录结构
 
 - `functions/`: 存放 Fish 函数定义文件
-  - 这些文件会被复制到 `~/.config/fish/functions/` 目录
-  - 每个函数应该单独放在一个 `.fish` 文件中
-  - 文件名应该与函数名相同
+    - 这些文件会被复制到 `~/.config/fish/functions/` 目录
+    - 每个函数应该单独放在一个 `.fish` 文件中
+    - 文件名应该与函数名相同
 
 - `completions/`: 存放命令补全定义文件
-  - 这些文件会被复制到 `~/.config/fish/completions/` 目录
-  - 用于定义命令的自动补全规则
-  - 文件名格式为 `命令名.fish`
+    - 这些文件会被复制到 `~/.config/fish/completions/` 目录
+    - 用于定义命令的自动补全规则
+    - 文件名格式为 `命令名.fish`
 
 - `conf.d/`: 存放配置文件片段
-  - 这些文件会被复制到 `~/.config/fish/conf.d/` 目录
-  - 用于存放各种配置片段
-  - 文件按数字前缀排序加载（如：`00-commons.fish`、`99-misc.fish`）
+    - 这些文件会被复制到 `~/.config/fish/conf.d/` 目录
+    - 用于存放各种配置片段
+    - 文件按数字前缀排序加载（如：`00-commons.fish`、`99-misc.fish`）
 
 ## 文件命名规范
 

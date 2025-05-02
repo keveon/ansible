@@ -1,19 +1,11 @@
 ---
-- name: 设置 Rust 安装镜像
-  shell: |
-    export RUSTUP_DIST_SERVER="{{ rust.mirror.url | default('https://mirrors.ustc.edu.cn/rust-static') }}"
-    export RUSTUP_UPDATE_ROOT="{{ rust.mirror.url | default('https://mirrors.ustc.edu.cn/rust-static') }}/rustup"
-  when: rust.mirror.enable | default(true)
-  changed_when: false
-  tags:
-    - rust
-    - cargo
-    - programming
-
 - name: 安装 Rust
   block:
     - name: 在 Linux 上安装 Rust
-      shell: curl --proto '=https' --tlsv1.2 -sSf {{ item }} | sh -s -- -y
+      shell: |
+        export RUSTUP_DIST_SERVER="{{ rust.mirror.url | default('https://mirrors.ustc.edu.cn/rust-static') }}"
+        export RUSTUP_UPDATE_ROOT="{{ rust.mirror.url | default('https://mirrors.ustc.edu.cn/rust-static') }}/rustup"
+        curl --proto '=https' --tlsv1.2 -sSf {{ item }} | sh -s -- -y
       args:
         creates: "{{ ansible_env.HOME }}/.cargo/bin/rustc"
       loop: "{{ rust.install.urls | default(['https://sh.rustup.rs']) }}"
@@ -79,11 +71,9 @@
 - name: 安装 Rust 工具
   block:
     - name: 在 Linux 上安装 Rust 工具
-      shell: cargo install {{ item.key }}
-      args:
-        creates: "{{ ansible_env.HOME }}/.cargo/bin/{{ item.key }}"
-      loop: "{{ rust.tools | default({}) | dict2items }}"
-      when: item.value.enable | default(true) and ansible_distribution != 'MacOSX'
+      shell: |
+        cargo install {{ rust.tools | default({}) | dict2items | selectattr('value.enable', 'true') | map(attribute='key') | list }}
+      when: ansible_distribution != 'MacOSX'
 
     - name: 在 macOS 上安装 Rust 工具
       homebrew:
@@ -97,21 +87,16 @@
 
 - name: 配置 Rust 工具
   block:
-    - name: 创建配置目录
-      file:
-        path: "{{ ansible_env.HOME }}/.config/{{ item.key }}"
-        state: directory
-        mode: '0700'
-      loop: "{{ rust.tools | default({}) | dict2items }}"
-      when: item.value.enable | default(true)
-
-    - name: 复制配置文件
-      copy:
+    # 同步启用工具的配置文件夹到 ~/.config/
+    - name: 配置 Rust 工具：{{ item.key }}
+      synchronize:
         src: "{{ role_path }}/files/{{ item.key }}/"
         dest: "{{ ansible_env.HOME }}/.config/{{ item.key }}/"
-        mode: '0600'
-      loop: "{{ rust.tools | default({}) | dict2items }}"
-      when: item.value.enable | default(true)
+      loop: "{{ rust.tools | dict2items | selectattr('value.enable', 'true') }}"
+      when: 
+        - (role_path ~ '/files/' ~ item.key) is exists
+        - (role_path ~ '/files/' ~ item.key) is directory
+      ignore_errors: true
   tags:
     - rust
     - cargo

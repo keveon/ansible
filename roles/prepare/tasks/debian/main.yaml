@@ -2,8 +2,12 @@
 - name: 更新 apt 缓存
   apt:
     update_cache: yes
+  tags:
+    - prepare
 
 - name: 升级系统软件包
   apt:
     upgrade: yes
     dpkg_options: 'force-confold,force-confdef'
+  tags:
+    - prepare

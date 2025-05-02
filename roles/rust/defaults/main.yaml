@@ -17,13 +17,9 @@ rust:
   tools:
     erdtree:
       enable: true
-      name: erdtree
     eza:
       enable: true
-      name: eza
     bat:
       enable: true
-      name: bat
     ripgrep:
       enable: true
-      name: ripgrep 

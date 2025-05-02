@@ -2,4 +2,4 @@
 neovim:
   lazyvim:
     repo: https://github.com/LazyVim/starter
-    branch: main 
+    branch: main

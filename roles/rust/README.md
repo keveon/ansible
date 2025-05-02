@@ -11,13 +11,13 @@
 
 ## 变量
 
-| 变量名 | 默认值 | 描述 |
-|--------|--------|------|
-| `rust.mirror.enable` | `true` | 是否启用镜像 |
-| `rust.mirror.url` | `https://mirrors.ustc.edu.cn/rust-static` | Rust 镜像地址 |
-| `rust.crates.enable` | `true` | 是否启用 Crates 镜像 |
-| `rust.crates.url` | `https://mirrors.ustc.edu.cn/crates.io-index` | Crates 镜像地址 |
-| `rust.tools` | `{}` | Rust 工具配置 |
+| 变量名                  | 默认值                                           | 描述             |
+|----------------------|-----------------------------------------------|----------------|
+| `rust.mirror.enable` | `true`                                        | 是否启用镜像         |
+| `rust.mirror.url`    | `https://mirrors.ustc.edu.cn/rust-static`     | Rust 镜像地址      |
+| `rust.crates.enable` | `true`                                        | 是否启用 Crates 镜像 |
+| `rust.crates.url`    | `https://mirrors.ustc.edu.cn/crates.io-index` | Crates 镜像地址    |
+| `rust.tools`         | `{}`                                          | Rust 工具配置      |
 
 ## 示例
 

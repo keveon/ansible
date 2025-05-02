@@ -3,7 +3,7 @@ galaxy_info:
   role_name: fish
   author: keveon
   description: Fish Shell 安装和配置
-  company: 
+  company:
   license: MIT
   min_ansible_version: 2.9
   platforms:
@@ -27,4 +27,4 @@ galaxy_info:
     - shell
     - terminal
 
-dependencies: [] 
+dependencies: [ ]

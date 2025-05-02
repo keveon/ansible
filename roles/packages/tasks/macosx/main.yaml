@@ -4,9 +4,13 @@
     name: "{{ common_packages }}"
     state: present
     update_homebrew: yes
+  tags:
+    - packages
 
 - name: 安装 macOS 特定软件包
   homebrew:
     name: "{{ macosx_packages }}"
     state: present
-    update_homebrew: yes 
+    update_homebrew: yes
+  tags:
+    - packages

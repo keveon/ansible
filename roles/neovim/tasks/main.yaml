@@ -31,8 +31,8 @@
   tags:
     - neovim
     - editor
-    - vim
     - nvim
+    - vim
     - vi
 
 - name: 验证 Neovim 安装
@@ -59,8 +59,8 @@
   tags:
     - neovim
     - editor
-    - vim
     - nvim
+    - vim
     - vi
 
 - name: 设置 Neovim 为默认编辑器
@@ -106,8 +106,8 @@
   tags:
     - neovim
     - editor
-    - vim
     - nvim
+    - vim
     - vi
 
 - name: 安装 LazyVim
@@ -154,6 +154,6 @@
   tags:
     - neovim
     - editor
-    - vim
     - nvim
+    - vim
     - vi

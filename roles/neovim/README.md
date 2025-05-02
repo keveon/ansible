@@ -11,10 +11,10 @@
 
 ## 变量
 
-| 变量名 | 默认值 | 描述 |
-|--------|--------|------|
-| `neovim.lazyvim.repo` | `https://github.com/LazyVim/starter` | LazyVim 仓库地址 |
-| `neovim.lazyvim.branch` | `main` | LazyVim 分支 |
+| 变量名                     | 默认值                                  | 描述           |
+|-------------------------|--------------------------------------|--------------|
+| `neovim.lazyvim.repo`   | `https://github.com/LazyVim/starter` | LazyVim 仓库地址 |
+| `neovim.lazyvim.branch` | `main`                               | LazyVim 分支   |
 
 ## 示例
 

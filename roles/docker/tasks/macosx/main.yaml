@@ -4,9 +4,15 @@
     name: orbstack
     state: present
   register: orbstack_install
+  tags:
+    - docker
+    - container
 
 - name: 等待 OrbStack 安装完成
   wait_for:
     path: /Applications/OrbStack.app
     state: present
   when: orbstack_install.changed
+  tags:
+    - docker
+    - container

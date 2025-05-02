@@ -72,4 +72,4 @@ check-fish:
 
 # 显示系统发行版信息
 show-dist:
-	ansible-playbook playbooks/show_distribution.yaml 
+	ansible-playbook playbooks/show_distribution.yaml

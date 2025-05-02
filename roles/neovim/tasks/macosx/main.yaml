@@ -3,4 +3,10 @@
   homebrew:
     name: neovim
     state: present
-    update_homebrew: yes 
+    update_homebrew: yes
+  tags:
+    - neovim
+    - editor
+    - nvim
+    - vim
+    - vi

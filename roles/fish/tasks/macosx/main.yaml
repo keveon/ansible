@@ -4,3 +4,6 @@
     name: fish
     state: present
     update_homebrew: yes
+  tags:
+    - fish
+    - shell

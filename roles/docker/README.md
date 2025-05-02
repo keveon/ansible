@@ -11,13 +11,13 @@
 
 ## 变量
 
-| 变量名 | 默认值 | 描述 |
-|--------|--------|------|
-| `docker.ipv6` | `false` | 是否启用 IPv6 |
-| `docker.live_restore` | `true` | 是否启用热重载 |
-| `docker.data_root` | `/var/lib/docker` | Docker 数据目录 |
-| `docker.registry_mirrors` | `[]` | Docker 镜像仓库列表 |
-| `docker.insecure_registries` | `[]` | 不安全的镜像仓库列表 |
+| 变量名                          | 默认值               | 描述            |
+|------------------------------|-------------------|---------------|
+| `docker.ipv6`                | `false`           | 是否启用 IPv6     |
+| `docker.live_restore`        | `true`            | 是否启用热重载       |
+| `docker.data_root`           | `/var/lib/docker` | Docker 数据目录   |
+| `docker.registry_mirrors`    | `[]`              | Docker 镜像仓库列表 |
+| `docker.insecure_registries` | `[]`              | 不安全的镜像仓库列表    |
 
 ## 示例
 

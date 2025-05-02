@@ -3,7 +3,7 @@ galaxy_info:
   role_name: prepare
   author: keveon
   description: 系统准备角色，用于配置系统基本设置
-  company: 
+  company:
   license: MIT
   min_ansible_version: 2.9
   platforms:
@@ -27,4 +27,4 @@ galaxy_info:
     - prepare
     - configuration
 
-dependencies: [] 
+dependencies: [ ]

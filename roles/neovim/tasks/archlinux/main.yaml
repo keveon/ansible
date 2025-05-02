@@ -3,4 +3,10 @@
   pacman:
     name: neovim
     state: present
-    update_cache: yes 
+    update_cache: yes
+  tags:
+    - neovim
+    - editor
+    - nvim
+    - vim
+    - vi

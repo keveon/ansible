@@ -26,6 +26,6 @@ galaxy_info:
     - docker
     - container
     - devops
-    - development 
+    - development
 
-dependencies: [] 
+dependencies: [ ]

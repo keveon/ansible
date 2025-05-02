@@ -7,4 +7,4 @@ function fish_title
         # 否则显示当前目录
         echo $PWD
     end
-end 
+end

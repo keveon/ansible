@@ -11,4 +11,4 @@
 
     - name: 显示可用的发布包
       debug:
-        msg: "可用的发布包: {{ fish_latest_release.json.assets | map(attribute='name') | list }}" 
+        msg: "可用的发布包: {{ fish_latest_release.json.assets | map(attribute='name') | list }}"

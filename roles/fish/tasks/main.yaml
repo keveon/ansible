@@ -56,7 +56,7 @@
   tags:
     - fish
     - shell
-  
+
 - name: 配置 Fish Shell 系统设置
   block:
     - name: 检查 Fish Shell 是否在 /etc/shells 中
